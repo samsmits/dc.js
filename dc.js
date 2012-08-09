@@ -598,6 +598,7 @@ dc.coordinateGridChart = function(_chart) {
     var _margin = {top: 10, right: 50, bottom: 30, left: 20};
 
     var _g;
+	var _gPlotData;
 
     var _x;
     var _xAxis = d3.svg.axis();
@@ -629,6 +630,18 @@ dc.coordinateGridChart = function(_chart) {
         return _chart;
     };
 
+    _chart.gPlotData = function(_) {
+        if (!arguments.length){
+			if(!_gPlotData){
+				 _gPlotData = _g.append("g")
+					.attr("class", "plotdata");
+			}
+			return _gPlotData;
+		}
+        _gPlotData = _;
+        return _chart;
+    };
+
     _chart.margins = function(m) {
         if (!arguments.length) return _margin;
         _margin = m;
@@ -656,7 +669,7 @@ dc.coordinateGridChart = function(_chart) {
 
         _x.range([0, _chart.xAxisLength()]);
         _xAxis = _xAxis.scale(_chart.x()).orient("bottom");
-        g.append("g")
+        g.insert("g", ":first-child")
             .attr("class", "axis x")
             .attr("transform", "translate(" + _chart.margins().left + "," + _chart.xAxisY() + ")")
             .call(_xAxis);
@@ -670,7 +683,7 @@ dc.coordinateGridChart = function(_chart) {
 
             var ticks = _xAxis.tickValues()?_xAxis.tickValues():_x.ticks(_xAxis.ticks()[0]);
 
-            var gridLineG = g.append("g")
+            var gridLineG = g.insert("g", ":first-child")
                 .attr("class", GRID_LINE_CLASS + " " + VERTICAL_CLASS)
                 .attr("transform", "translate(" + _chart.yAxisX() + "," + _chart.margins().top + ")");
 
@@ -725,7 +738,7 @@ dc.coordinateGridChart = function(_chart) {
 
             var ticks = _yAxis.tickValues()?_yAxis.tickValues():_y.ticks(_yAxis.ticks()[0]);
 
-            var gridLineG = g.append("g")
+            var gridLineG = g.insert("g", ":first-child")
                 .attr("class", GRID_LINE_CLASS + " " + HORIZONTAL_CLASS)
                 .attr("transform", "translate(" + _chart.yAxisX() + "," + _chart.margins().top + ")");
 
@@ -1419,7 +1432,7 @@ dc.barChart = function(parent, chartGroup) {
     };
 
     function generateBarsPerGroup(groupIndex, group) {
-        var bars = _chart.g().selectAll("rect." + dc.constants.STACK_CLASS + groupIndex)
+        var bars = _chart.gPlotData().selectAll("rect." + dc.constants.STACK_CLASS + groupIndex)
             .data(group.all());
 
         // new
